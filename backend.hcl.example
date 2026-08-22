@@ -1,0 +1,6 @@
+bucket       = "<your-tfstate-bucket>"
+key          = "cloud-security-automation-pipeline/terraform.tfstate"
+region       = "<your-region>"
+use_lockfile = true
+encrypt      = true
+profile      = "<your-aws-profile>"
