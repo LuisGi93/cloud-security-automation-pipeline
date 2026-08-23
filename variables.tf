@@ -3,11 +3,6 @@ variable "aws_region" {
   type        = string
 }
 
-variable "aws_profile" {
-  description = "AWS CLI profile to use"
-  type        = string
-}
-
 variable "tfstate_bucket_name" {
   description = "Name of the S3 bucket used as Terraform remote backend"
   type        = string
