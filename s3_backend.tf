@@ -9,7 +9,7 @@ resource "aws_s3_bucket_versioning" "s3_backend_versioning" {
   }
 }
 
-resource "aws_s3_bucket_public_access_block" "s3_backend_s3_bloqueo" {
+resource "aws_s3_bucket_public_access_block" "s3_backend_s3_public_access_block" {
   bucket = aws_s3_bucket.s3_backend.id
 
   block_public_acls       = true
