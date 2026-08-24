@@ -24,3 +24,10 @@ variable "owner" {
   description = "Resource owner (used in tags)"
   type        = string
 }
+
+variable "github_repo" {
+  description = "GitHub repository allowed to assume the CI role via OIDC. Uses the immutable subject format (owner@owner_id/repo@repo_id) since this repo was created after GitHub's July 15, 2026."
+  type        = string
+  default     = "LuisGi93@17405573/cloud-security-automation-pipeline@1338709143"
+
+}
