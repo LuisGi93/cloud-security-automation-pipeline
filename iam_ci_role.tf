@@ -104,6 +104,14 @@ data "aws_iam_policy_document" "github_actions_ci_plan_permissions" {
     resources = [aws_iam_role.github_actions_ci.arn]
   }
 
+  statement {
+    sid    = "OIDCProviderRead"
+    effect = "Allow"
+    actions = [
+      "iam:GetOpenIDConnectProvider"
+    ]
+    resources = [aws_iam_openid_connect_provider.github_actions.arn]
+  }
 }
 
 resource "aws_iam_role_policy" "github_actions_ci_permissions" {
