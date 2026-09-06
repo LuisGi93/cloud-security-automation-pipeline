@@ -52,15 +52,12 @@ data "aws_iam_policy_document" "github_actions_ci_plan_permissions" {
     resources = [aws_s3_bucket.s3_backend.arn]
   }
 
-
-
   statement {
     sid       = "TerraformStateLockfileWrite"
     effect    = "Allow"
     actions   = ["s3:PutObject"]
     resources = ["${aws_s3_bucket.s3_backend.arn}/${var.state_key}.tflock"]
   }
-
 
   statement {
     sid    = "TerraformStateObjectRead"
@@ -95,7 +92,6 @@ data "aws_iam_policy_document" "github_actions_ci_plan_permissions" {
     resources = ["${aws_s3_bucket.s3_backend.arn}/${var.state_key}.tflock"]
   }
 
-
   statement {
     sid    = "IAMRoleRead"
     effect = "Allow"
@@ -107,8 +103,6 @@ data "aws_iam_policy_document" "github_actions_ci_plan_permissions" {
     ]
     resources = [aws_iam_role.github_actions_ci.arn]
   }
-
-
 
 }
 
