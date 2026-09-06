@@ -31,7 +31,6 @@ jobs:
         with:
           directory: .
           framework: terraform
-          # soft_fail: true  # Descomenta esto si no quieres que el PR falle por advertencias de seguridad leves
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
