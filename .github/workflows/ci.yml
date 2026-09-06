@@ -13,7 +13,13 @@ jobs:
     if: github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     timeout-minutes: 10
-
+    env:
+      TF_VAR_aws_region: ${{ vars.AWS_REGION }}
+      TF_VAR_tfstate_bucket_name: ${{ vars.TF_STATE_BUCKET }}
+      TF_VAR_owner: ${{ vars.OWNER }}
+      TF_VAR_state_key: ${{ vars.TF_STATE_KEY }}
+      TF_VAR_github_repo: "${{ github.repository_owner }}@${{ github.repository_owner_id }}/${{ github.event.repository.name }}@${{ github.repository_id }}"
+      
     steps:
       - name: Checkout
         uses: actions/checkout@v4
