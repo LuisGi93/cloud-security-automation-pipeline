@@ -31,3 +31,9 @@ variable "github_repo" {
   default     = "LuisGi93@17405573/cloud-security-automation-pipeline@1338709143"
 
 }
+
+variable "state_key" {
+  type        = string
+  default     = "cloud-security-automation-pipeline/terraform.tfstate"
+  description = "S3 key used for the Terraform remote state"
+}
