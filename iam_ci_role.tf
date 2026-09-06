@@ -42,6 +42,7 @@ data "aws_iam_policy_document" "github_actions_ci_plan_permissions" {
       "s3:GetBucketPolicy",
       "s3:GetReplicationConfiguration",
       "s3:GetBucketRequestPayment",
+      "s3:GetBucketObjectLockConfiguration",
       "s3:GetBucketTagging",
       "s3:GetBucketVersioning",
       "s3:GetBucketWebsite",
