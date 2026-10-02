@@ -29,7 +29,7 @@ I implemented least-privilege access across two dimensions:
 
 ```hcl
 condition {
-      test     = "StringLike"
+      test     = "StringEquals"
       variable = "token.actions.githubusercontent.com:sub"
       values   = ["repo:${var.github_repo}:pull_request"]
 }
@@ -57,5 +57,4 @@ Where `var.github_repo` defaults to:
 
 ### Deferred
 
-* Change `StringLike` to `StringEquals` in the OIDC trust policy. Since the subject claim value is an exact string match without wildcards, `StringEquals` is stricter and cleaner. While using `StringLike` here isn't a security vulnerability, locking it down further is better practice.
 * The current least-privilege permission set reflects only the API calls required to plan the existing backend/IAM/OIDC resources. As GuardDuty, Security Hub, EventBridge, and Lambda resources are introduced (I hope), the role's permission set will require re-derivation using the same `TF_LOG=DEBUG` methodology - it is not yet representative of the project's full future footprint.
