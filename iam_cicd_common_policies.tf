@@ -89,6 +89,17 @@ data "aws_iam_policy_document" "terraform_state_read" {
     ]
     resources = [aws_iam_openid_connect_provider.github_actions.arn]
   }
+
+  statement {
+    sid    = "ReadRemediationTopic"
+    effect = "Allow"
+    actions = [
+      "sns:GetTopicAttributes",
+      "sns:ListTagsForResource",
+    ]
+    resources = [local.remediation_topic_arn]
+  }
+
 }
 
 
