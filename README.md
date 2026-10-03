@@ -22,11 +22,21 @@ The project currently includes:
 - Checkov security scanning as part of CI
 - Architecture Decision Records documenting the main security decisions
 
+**Phase 3 in progress:** Terraform CD with GitHub Actions and a dedicated least-privilege role.
+
+- GitHub Actions CD applying on push to `main`, using a saved plan (`plan -out` then `apply`)
+- Separate CD role, assumable only from `refs/heads/main` of this repository (immutable owner/repo identity in the OIDC subject)
+- CI role stays plan-only; CD role holds the write permissions, scoped per resource as they are added
+- Native S3 locking enforced in both workflows (`use_lockfile=true` passed at `init`)
+- Terraform pinned to the same version locally, in CI and in CD
+- Hardened CODEOWNERS covering the `.github/` directory (including CODEOWNERS itself) and the provider lock file
+- Direct pushes to `main` blocked for everyone, including admins (bypass limited to pull requests), since every push to `main` triggers an apply
+
 More components (detection and automated response - GuardDuty, Security Hub, EventBridge, Lambda) will be added incrementally. This README will be updated as each phase lands.
 
 ## Requirements
 
-- Terraform ≥ 1.5.0 (CI pipeline runs on 1.9.0)
+- Terraform ≥ 1.10.0 (CI and CD pipelines run on 1.15.8)
 - An AWS account
 
 ## Local setup
@@ -62,7 +72,7 @@ Copy the example variables file and adjust as needed:
 cp terraform.tfvars.example terraform.tfvars
 ```
 
-> Note: the CI role can't manage its own IAM policy before it exists, so the initial bootstrap `apply` (and any change to the OIDC trust policy) has to be run locally with admin credentials — see [ADR-002](docs/adr/002-oidc-least-privilege-immutable-identity.md).
+> Note: the CI and CD roles can't manage their own IAM policies, so the initial bootstrap `apply` (and any change to the OIDC trust policies or to the roles' permissions) has to be run locally with admin credentials. See [ADR-002](docs/adr/002-oidc-least-privilege-immutable-identity.md).
 
 ## Structure
 
@@ -71,12 +81,18 @@ cp terraform.tfvars.example terraform.tfvars
 ├── .github/
 │   ├── CODEOWNERS
 │   └── workflows/
+│       ├── cd.yml
 │       └── ci.yml
 ├── docs/
 │   └── adr/
+├── .gitignore
+├── .terraform.lock.hcl
 ├── backend.hcl.example
 ├── data.tf
+├── iam_cd_role.tf
 ├── iam_ci_role.tf
+├── iam_cicd_common_policies.tf
+├── locals.tf
 ├── main.tf
 ├── oidc.tf
 ├── outputs.tf
@@ -88,7 +104,7 @@ cp terraform.tfvars.example terraform.tfvars
 
 ## Architecture
 
-The current pipeline uses GitHub Actions to validate Terraform changes before they are merged.
+The pipeline uses GitHub Actions to validate Terraform changes before they are merged and to apply them after merge.
 
 ```text
 Developer
@@ -113,6 +129,26 @@ GitHub Actions
                     │
                     ▼
                  S3 Backend
+```
+
+After merge, a second workflow applies the change:
+
+```text
+Merge to main
+   │
+   ▼
+GitHub Actions (CD)
+   ├── AWS STS / OIDC (assume CD role, main branch only)
+   ├── Terraform init (S3 lockfile)
+   ├── Terraform plan -out=tfplan
+   └── Terraform apply tfplan
+          │
+          ▼
+   IAM CD Role
+   (least privilege, apply)
+          │
+          ├── Terraform state read/write
+          └── Managed resources
 ```
 
 ## Architecture Decision Records

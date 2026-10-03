@@ -1,2 +1,3 @@
-.github/workflows/ @LuisGi93
-*.tf              @LuisGi93
+/.github/             @LuisGi93
+*.tf                  @LuisGi93
+.terraform.lock.hcl   @LuisGi93
