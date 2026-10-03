@@ -1,16 +1,19 @@
-name: Terraform CI
+name: Terraform CD
 
 on:
-  pull_request:
+  push:
     branches: [main]
 
 permissions:
   contents: read
   id-token: write
-
+  
+concurrency:
+  group: terraform-apply
+  cancel-in-progress: false
+  
 jobs:
-  plan:
-    if: github.event.pull_request.head.repo.full_name == github.repository
+  apply:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
@@ -24,25 +27,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_CD_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+          
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: "1.15.8"
-
-      - name: Terraform fmt check
-        run: terraform fmt -check -recursive
-
-      - name: Checkov scan
-        uses: bridgecrewio/checkov-action@v12
-        with:
-          directory: .
-          framework: terraform
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ vars.AWS_CI_ROLE_ARN }}
-          aws-region: ${{ vars.AWS_REGION }}
 
       - name: Terraform init
         run: |
@@ -52,8 +46,8 @@ jobs:
             -backend-config="region=${{ vars.AWS_REGION }}" \
             -backend-config="use_lockfile=true"
 
-      - name: Terraform validate
-        run: terraform validate -no-color 
-
       - name: Terraform plan
-        run: terraform plan -no-color -input=false
+        run: terraform plan -no-color -input=false -out=tfplan
+
+      - name: Terraform apply
+        run: terraform apply -input=false tfplan

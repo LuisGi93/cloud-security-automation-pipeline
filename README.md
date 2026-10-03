@@ -26,7 +26,7 @@ More components (detection and automated response - GuardDuty, Security Hub, Eve
 
 ## Requirements
 
-- Terraform ≥ 1.5.0 (CI pipeline runs on 1.9.0)
+- Terraform ≥ 1.10.0 (CI pipeline runs on 1.15.8)
 - An AWS account
 
 ## Local setup
@@ -71,7 +71,8 @@ cp terraform.tfvars.example terraform.tfvars
 ├── .github/
 │   ├── CODEOWNERS
 │   └── workflows/
-│       └── ci.yml
+│       ├── ci.yml
+│       └── cd.yml
 ├── docs/
 │   └── adr/
 ├── backend.hcl.example
