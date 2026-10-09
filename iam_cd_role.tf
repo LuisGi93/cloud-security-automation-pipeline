@@ -43,6 +43,7 @@ data "aws_iam_policy_document" "github_actions_cd_permissions" {
 
     actions = [
       "sns:CreateTopic",
+      "sns:SetTopicAttributes",
       "sns:TagResource"
     ]
     resources = [local.remediation_topic_arn]
