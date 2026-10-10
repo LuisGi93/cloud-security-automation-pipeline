@@ -22,7 +22,7 @@ The project currently includes:
 - Checkov security scanning as part of CI
 - Architecture Decision Records documenting the main security decisions
 
-**Phase 3 in progress:** Terraform CD with GitHub Actions and a dedicated least-privilege role.
+**Phase 3 complete:** Terraform CD with GitHub Actions and a dedicated least-privilege role.
 
 - GitHub Actions CD applying on push to `main`, using a saved plan (`plan -out` then `apply`)
 - Separate CD role, assumable only from `refs/heads/main` of this repository (immutable owner/repo identity in the OIDC subject)
@@ -31,6 +31,8 @@ The project currently includes:
 - Terraform pinned to the same version locally, in CI and in CD
 - Hardened CODEOWNERS covering the `.github/` directory (including CODEOWNERS itself) and the provider lock file
 - Direct pushes to `main` blocked for everyone, including admins (bypass limited to pull requests), since every push to `main` triggers an apply
+- CD write permissions derived from observed `AccessDenied` events, with CloudTrail evidence, instead of assumed up front
+- First apply of the SNS topic deliberately left to fail to validate the write path; each missing permission was added in an IAM PR and applied locally with admin before the next run
 
 More components (detection and automated response - GuardDuty, Security Hub, EventBridge, Lambda) will be added incrementally. This README will be updated as each phase lands.
 
@@ -98,6 +100,7 @@ cp terraform.tfvars.example terraform.tfvars
 ├── outputs.tf
 ├── providers.tf
 ├── s3_backend.tf
+├── sns_remediation.tf
 ├── variables.tf
 └── terraform.tfvars.example
 ```
