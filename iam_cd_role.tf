@@ -43,10 +43,24 @@ data "aws_iam_policy_document" "github_actions_cd_permissions" {
 
     actions = [
       "sns:CreateTopic",
+      "sns:DeleteTopic",
       "sns:SetTopicAttributes",
       "sns:TagResource"
     ]
     resources = [local.remediation_topic_arn]
+  }
+
+  statement {
+    sid    = "RemediationSgRuleManagement"
+    effect = "Allow"
+    actions = [
+      "events:PutRule",
+      "events:DeleteRule",
+      "events:PutTargets",
+      "events:RemoveTargets",
+      "events:TagResource",
+    ]
+    resources = [local.remediation_sg_rule_arn]
   }
 
 

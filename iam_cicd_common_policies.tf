@@ -95,9 +95,20 @@ data "aws_iam_policy_document" "terraform_state_read" {
     effect = "Allow"
     actions = [
       "sns:GetTopicAttributes",
-      "sns:ListTagsForResource",
+      "sns:ListTagsForResource"
     ]
     resources = [local.remediation_topic_arn]
+  }
+
+  statement {
+    sid    = "ReadRemediationSgRule"
+    effect = "Allow"
+    actions = [
+      "events:DescribeRule",
+      "events:ListTagsForResource",
+      "events:ListTargetsByRule"
+    ]
+    resources = [local.remediation_sg_rule_arn]
   }
 
 }
